@@ -25,9 +25,12 @@ public class TimeManager : MonoBehaviour
     int cancelHours;
     int cancelMinutes;
     bool openedViaTimerButton;
+    bool timerIsOn;
 
     //top timer
     [SerializeField] TextMeshProUGUI topTimerText;
+
+    [SerializeField] GameObject deleteButton;
     private void Awake()
     {
         mGManager = FindObjectOfType<MiniGameManager>();
@@ -46,7 +49,7 @@ public class TimeManager : MonoBehaviour
                
                 if(int.Parse(timersTime[1]) > 59)
                 {
-                    timersTime[1] = (int.Parse(timersTime[1]) - 59).ToString();
+                    timersTime[1] = (int.Parse(timersTime[1]) - 60).ToString();
                     timersTime[0] = (int.Parse(timersTime[0]) + 1).ToString();
                 }
                 char[] d = timersTime[1].ToCharArray();
@@ -55,7 +58,7 @@ public class TimeManager : MonoBehaviour
                     timersTime[1] = "0" + timersTime[1];
                 }
 
-                Debug.Log(timersTime[1]);
+                //Debug.Log(timersTime[1]);
 
                 if (timersTime[0] == divided[0] && timersTime[1] == divided[1] && Timers[i].GetComponent<TimerButton>().isOn)
                 {
@@ -73,6 +76,7 @@ public class TimeManager : MonoBehaviour
     }
     void TopTimer()
     {
+        if(topTimerText.text != divided[0] + ":" + divided[1])
         topTimerText.text = divided[0] + ":" + divided[1];
     }
     public void addTimer()
@@ -87,7 +91,7 @@ public class TimeManager : MonoBehaviour
         }
         if (!AlreadyExist)
         {
-            AddTheTimer(new int[] { numbers[0].number, numbers[1].number});
+            AddTheTimer(new int[] { numbers[0].number, numbers[1].number}, true);
             openedViaTimerButton = false;
         }
         else
@@ -96,10 +100,14 @@ public class TimeManager : MonoBehaviour
             AETTime = Time.time + 1.5f;
         }
     }
-    void AddTheTimer(int[] theNumbers)
+    void AddTheTimer(int[] theNumbers, bool on)
     {
-        Debug.Log(theNumbers[0] + " , " + theNumbers[1]);
+       // Debug.Log(theNumbers[0] + " , " + theNumbers[1]);
         GameObject g = Instantiate(timerPrefab, timerMenu.transform);
+
+        g.GetComponent<TimerButton>().isOn = on;
+        g.GetComponent<TimerButton>().ControllToggle();
+
         bool haveInserted = false;
         for (int i = 0; i < Timers.Count; i++)
         {
@@ -143,8 +151,10 @@ public class TimeManager : MonoBehaviour
             Timers[i].transform.position = timerMenu.transform.position + new Vector3(0, -offset * i, 0);
         }
     }
-    public void removeTimer(GameObject g, int pH, int pM)
+    public void removeTimer(GameObject g, int pH, int pM, bool on)
     {
+        deleteButton.SetActive(true);
+        timerIsOn = on;
         openedViaTimerButton = true;
 
         cancelHours = pH;
@@ -165,6 +175,7 @@ public class TimeManager : MonoBehaviour
     }
     public void OpenSliderMenu()
     {
+        deleteButton.SetActive(false);
         timerMenu.SetActive(false);
         sliderMenu.SetActive(true);
     }
@@ -180,13 +191,22 @@ public class TimeManager : MonoBehaviour
     {
         if (openedViaTimerButton)
         {
-            AddTheTimer(new int[] { cancelHours, cancelMinutes });
+            AddTheTimer(new int[] { cancelHours, cancelMinutes }, timerIsOn);
             openedViaTimerButton = false;
+
         }
         else
         {
             sliderMenu.SetActive(false);
             ActivateTimerMenu();
         }
+    }
+    public void DeleteButton()
+    {
+        sliderMenu.SetActive(false);
+        ActivateTimerMenu();
+
+        ResetYPositions();
+
     }
 }

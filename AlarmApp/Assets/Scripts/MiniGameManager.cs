@@ -8,6 +8,10 @@ public class MiniGameManager : MonoBehaviour
 
     [SerializeField] GameObject GameMenu;
     [SerializeField] GameObject[] miniGamePrefabs;
+
+    GameObject miniGame;
+    int minigameIndex;
+
     [SerializeField] GameObject snoozeButton;
 
     [SerializeField] AudioSource alarmSound;
@@ -15,10 +19,13 @@ public class MiniGameManager : MonoBehaviour
     public int difficulty;
 
     GameObject timerM;
-    GameObject button;
+    GameObject outOfGameMenu;
+    [SerializeField] GameObject inGameMenu;
     GameObject theTimer;
 
     TimeManager tM;
+
+    [SerializeField]bool muteAlarmWhilePlaying;
 
     private void Awake()
     {
@@ -27,8 +34,8 @@ public class MiniGameManager : MonoBehaviour
 
     public void StartMiniGame(GameObject timerMenu, GameObject sliderMenu, GameObject timer)
     {
-        if(button != null)
-        button.SetActive(true);
+        if(outOfGameMenu != null)
+        outOfGameMenu.SetActive(true);
 
         if (timer.GetComponent<TimerButton>().snoozeText.activeSelf)
         {
@@ -46,13 +53,20 @@ public class MiniGameManager : MonoBehaviour
         sliderMenu.SetActive(false);
         GameMenu.SetActive(true);
 
-        alarmSound.Play();
+        
+            alarmSound.Play();
+
+
+        minigameIndex = Random.Range(0, miniGamePrefabs.Length);
     }
     public void PlayGameButton(GameObject Button)
     {
-        button = Button;
-        Button.SetActive(false);
-        GameObject g = Instantiate(miniGamePrefabs[Random.Range(0, miniGamePrefabs.Length)], GameMenu.transform);
+        outOfGameMenu = Button;
+        outOfGameMenu.SetActive(false);
+        inGameMenu.SetActive(true);
+        miniGame = Instantiate(miniGamePrefabs[minigameIndex], GameMenu.transform);
+        if (muteAlarmWhilePlaying)
+            alarmSound.Stop();
     }
     public void DoneWithGame()
     {
@@ -74,5 +88,29 @@ public class MiniGameManager : MonoBehaviour
 
 
         theTimer.GetComponent<TimerButton>().ActivateSnoozeText();
+    }
+    public void GoBackToOutOfGameMenu()
+    {
+        inGameMenu.SetActive(false);
+        outOfGameMenu.SetActive(true);
+        Destroy(miniGame);
+        if (!alarmSound.isPlaying)
+        {
+            alarmSound.Play();
+        }
+    }
+    public void MuteMusic()
+    {
+        if (muteAlarmWhilePlaying)
+        {
+            muteAlarmWhilePlaying = false;
+            alarmSound.Play();
+        }
+        else
+        {
+            muteAlarmWhilePlaying = true;
+            alarmSound.Stop();
+        }
+            
     }
 }

@@ -21,7 +21,7 @@ public class TimerButton : MonoBehaviour
     }
     public void OpenSliderMenu()
     {
-        tManager.removeTimer(gameObject, Hours, Minutes);
+        tManager.removeTimer(gameObject, Hours, Minutes, isOn);
     }
 
     public void ActivateSnoozeText()
