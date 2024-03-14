@@ -25,6 +25,9 @@ public class TimeManager : MonoBehaviour
     int cancelHours;
     int cancelMinutes;
     bool openedViaTimerButton;
+
+    //top timer
+    [SerializeField] TextMeshProUGUI topTimerText;
     private void Awake()
     {
         mGManager = FindObjectOfType<MiniGameManager>();
@@ -65,6 +68,12 @@ public class TimeManager : MonoBehaviour
         {
             alreadyExistsText.SetActive(false);
         }
+
+        TopTimer();
+    }
+    void TopTimer()
+    {
+        topTimerText.text = divided[0] + ":" + divided[1];
     }
     public void addTimer()
     {
