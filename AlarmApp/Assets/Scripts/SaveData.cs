@@ -9,8 +9,9 @@ public class SaveData : MonoBehaviour
     public SaveObject saveObject = new SaveObject { };
     private void Awake()
     {
+        
         if (!Directory.Exists(Application.persistentDataPath + "/Saves/SaveData.txt"))
-            Directory.CreateDirectory(Application.persistentDataPath + "/Saves/SaveData.txt");
+             File.WriteAllText(Application.persistentDataPath + "/Saves/SaveData.txt", JsonUtility.ToJson(saveObject));
         else
             saveObject = JsonUtility.FromJson<SaveObject>(File.ReadAllText(Application.persistentDataPath + "/Saves/SaveData.txt"));
 
@@ -29,8 +30,8 @@ public class SaveData : MonoBehaviour
 
     public class SaveObject
     {
-        public List<string> timers;
-        public List<bool> isOn;
+        public List<string> timers = new List<string>();
+        public List<bool> isOn = new List<bool>();
     }
     public void saveTheData()
     {
