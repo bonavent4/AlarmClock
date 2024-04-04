@@ -40,8 +40,8 @@ public class SqGame : MonoBehaviour
                 hit.collider.GetComponent<SqButton>().Pressed();
                 if (hit.collider.gameObject == newButtonList[buttonsPressed])
                 {
-                    
 
+                    mgManager.resetTimer();
                     buttonsPressed++;
                     if (buttonsPressed == newButtonList.Count)
                         StartRound();
@@ -55,6 +55,7 @@ public class SqGame : MonoBehaviour
                     buttonsPressed = 0;
                     CanTouch = false;
                     index = 0;
+                    mgManager.stopTimer();
                     for (int i = 0; i < newButtonList.Count; i++)
                     {
                         Invoke("ShowButton", timeBetween * (i + 1));
@@ -75,6 +76,7 @@ public class SqGame : MonoBehaviour
         {
             buttonsPressed = 0;
             CanTouch = false;
+            mgManager.stopTimer();
             AddButtonToNewList();
             RoundText.text = "Round " + newButtonList.Count + "/" + difficultyRounds[mgManager.difficulty];
 
@@ -106,6 +108,7 @@ public class SqGame : MonoBehaviour
         if(index == newButtonList.Count)
         {
             CanTouch = true;
+            mgManager.startTimer();
         }
     }
 }

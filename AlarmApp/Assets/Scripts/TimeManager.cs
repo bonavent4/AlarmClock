@@ -31,8 +31,11 @@ public class TimeManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI topTimerText;
 
     [SerializeField] GameObject deleteButton;
+
+    SaveData saveData;
     private void Awake()
     {
+        saveData = gameObject.GetComponent<SaveData>();
         mGManager = FindObjectOfType<MiniGameManager>();
     }
     private void Update()
@@ -100,7 +103,7 @@ public class TimeManager : MonoBehaviour
             AETTime = Time.time + 1.5f;
         }
     }
-    void AddTheTimer(int[] theNumbers, bool on)
+    public void AddTheTimer(int[] theNumbers, bool on)
     {
        // Debug.Log(theNumbers[0] + " , " + theNumbers[1]);
         GameObject g = Instantiate(timerPrefab, timerMenu.transform);
@@ -114,6 +117,7 @@ public class TimeManager : MonoBehaviour
             if (theNumbers[0] < Timers[i].GetComponent<TimerButton>().Hours || (theNumbers[0] == Timers[i].GetComponent<TimerButton>().Hours && theNumbers[1] < Timers[i].GetComponent<TimerButton>().Minutes))
             {
                 Timers.Insert(i, g);
+                saveData.AddTimer(i, theNumbers[0] + ":" + theNumbers[1], on);
                 haveInserted = true;
                 break;
             }
@@ -121,7 +125,10 @@ public class TimeManager : MonoBehaviour
         if (!haveInserted)
         {
             Timers.Add(g);
+            saveData.AddTimer(Timers.IndexOf(g), theNumbers[0] + ":" + theNumbers[1], on);
         }
+        saveData.saveTheData();
+
         g.GetComponent<TimerButton>().Hours = theNumbers[0];
         g.GetComponent<TimerButton>().Minutes = theNumbers[1];
 
@@ -164,7 +171,9 @@ public class TimeManager : MonoBehaviour
         numbers[1].numberList.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         numbers[0].numberList.transform.position = new Vector3(numbers[0].numberList.transform.position.x, numbers[0].startY + (numbers[0].offset * g.GetComponent<TimerButton>().Hours), numbers[0].numberList.transform.position.z);
         numbers[1].numberList.transform.position = new Vector3(numbers[1].numberList.transform.position.x, numbers[1].startY + (numbers[1].offset * g.GetComponent<TimerButton>().Minutes), numbers[1].numberList.transform.position.z);
-        
+
+        saveData.RemoveTimer(g.GetComponent<TimerButton>().Hours + ":" + g.GetComponent<TimerButton>().Minutes);
+
         Timers.Remove(g);
         Destroy(g);
 

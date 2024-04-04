@@ -26,12 +26,29 @@ public class MiniGameManager : MonoBehaviour
     TimeManager tM;
 
     [SerializeField]bool muteAlarmWhilePlaying;
+    [SerializeField] GameObject soundOnIcon;
+    [SerializeField] GameObject soundOffIcon;
+
+    [SerializeField] GameObject timeSlider;
+    [SerializeField] float timeSpeed;
+    bool moveSlider;
 
     private void Awake()
     {
         tM = FindObjectOfType<TimeManager>();
     }
-
+    private void Update()
+    {
+        if (moveSlider)
+        {
+            Debug.Log("Moving");
+            timeSlider.transform.localPosition -= new Vector3(timeSpeed * Time.deltaTime, 0, 0);
+            if(timeSlider.transform.localPosition.x <= -100)
+            {
+                GoBackToOutOfGameMenu();
+            }
+        }
+    }
     public void StartMiniGame(GameObject timerMenu, GameObject sliderMenu, GameObject timer)
     {
         if(outOfGameMenu != null)
@@ -67,9 +84,12 @@ public class MiniGameManager : MonoBehaviour
         miniGame = Instantiate(miniGamePrefabs[minigameIndex], GameMenu.transform);
         if (muteAlarmWhilePlaying)
             alarmSound.Stop();
+
+        startTimer();
     }
     public void DoneWithGame()
     {
+        stopTimer();
         GameMenu.SetActive(false);
         tM.ActivateTimerMenu();
 
@@ -91,6 +111,7 @@ public class MiniGameManager : MonoBehaviour
     }
     public void GoBackToOutOfGameMenu()
     {
+        stopTimer();
         inGameMenu.SetActive(false);
         outOfGameMenu.SetActive(true);
         Destroy(miniGame);
@@ -104,13 +125,32 @@ public class MiniGameManager : MonoBehaviour
         if (muteAlarmWhilePlaying)
         {
             muteAlarmWhilePlaying = false;
+            soundOffIcon.SetActive(false);
+            soundOnIcon.SetActive(true);
             alarmSound.Play();
         }
         else
         {
             muteAlarmWhilePlaying = true;
+            soundOffIcon.SetActive(true);
+            soundOnIcon.SetActive(false);
             alarmSound.Stop();
         }
             
+    }
+
+    public void startTimer()
+    {
+        moveSlider = true;
+        resetTimer();   
+    }
+    public void stopTimer()
+    {
+        moveSlider = false;
+        resetTimer();
+    }
+    public void resetTimer()
+    {
+        timeSlider.transform.localPosition = new Vector2(0, timeSlider.transform.localPosition.y);
     }
 }
