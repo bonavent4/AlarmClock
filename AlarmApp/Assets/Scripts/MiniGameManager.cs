@@ -19,11 +19,15 @@ public class MiniGameManager : MonoBehaviour
     public int difficulty;
 
     GameObject timerM;
+
+
     GameObject outOfGameMenu;
     [SerializeField] GameObject inGameMenu;
     GameObject theTimer;
 
     TimeManager tM;
+    SaveData saveD;
+
 
     [SerializeField]bool muteAlarmWhilePlaying;
     [SerializeField] GameObject soundOnIcon;
@@ -36,6 +40,7 @@ public class MiniGameManager : MonoBehaviour
     private void Awake()
     {
         tM = FindObjectOfType<TimeManager>();
+        saveD = gameObject.GetComponent<SaveData>();
     }
     private void Update()
     {
@@ -51,6 +56,9 @@ public class MiniGameManager : MonoBehaviour
     }
     public void StartMiniGame(GameObject timerMenu, GameObject sliderMenu, GameObject timer)
     {
+        //set difficulty
+        difficulty = saveD.saveObject.difficulty[tM.Timers.IndexOf(timer)];
+
         if(outOfGameMenu != null)
         outOfGameMenu.SetActive(true);
 

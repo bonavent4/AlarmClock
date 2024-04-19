@@ -78,7 +78,7 @@ public class SqGame : MonoBehaviour
             CanTouch = false;
             mgManager.stopTimer();
             AddButtonToNewList();
-            RoundText.text = "Round " + newButtonList.Count + "/" + difficultyRounds[mgManager.difficulty];
+            RoundText.text = "Round " + (newButtonList.Count - 1) + "/" + difficultyRounds[mgManager.difficulty];
 
             index = 0;
             for (int i = 0; i < newButtonList.Count; i++)

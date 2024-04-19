@@ -13,6 +13,8 @@ public class TouchInput : MonoBehaviour
     GameObject theObject;
     float pY;
     [SerializeField] float force;
+
+
     private void Awake()
     {
         mGManager = FindObjectOfType<MiniGameManager>();
@@ -37,16 +39,17 @@ public class TouchInput : MonoBehaviour
             }
             if(theObject!= null)
             {
-                
+                theObject.GetComponent<Numbers>().numberList.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
                 if (pY != Input.touches[0].position.y)
                 {
-                    theObject.GetComponent<Numbers>().numberList.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                   
                     Numbers ns = theObject.GetComponent<Numbers>();
                     //ns.numberList.transform.position += new Vector3(0, Input.touches[0].position.y - pY, 0);
                      
                   
                     ns.numberList.GetComponent<Rigidbody2D>().AddForce(transform.up * (Input.touches[0].position.y - pY) * force );
                     pY = Input.touches[0].position.y;
+
                 }
             }
         }

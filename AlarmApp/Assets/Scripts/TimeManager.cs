@@ -7,7 +7,7 @@ public class TimeManager : MonoBehaviour
 {
     MiniGameManager mGManager;
 
-    [SerializeField] List<GameObject> Timers;
+    public List<GameObject> Timers;
     [SerializeField] GameObject timerPrefab;
     [SerializeField] GameObject timerMenu;
     [SerializeField] GameObject sliderMenu;
@@ -33,10 +33,14 @@ public class TimeManager : MonoBehaviour
     [SerializeField] GameObject deleteButton;
 
     SaveData saveData;
+    SettingsManager settingsM;
+
+    GameObject currentTimer;
     private void Awake()
     {
         saveData = gameObject.GetComponent<SaveData>();
         mGManager = FindObjectOfType<MiniGameManager>();
+        settingsM = gameObject.GetComponent<SettingsManager>();
     }
     private void Update()
     {
@@ -90,11 +94,20 @@ public class TimeManager : MonoBehaviour
             if(numbers[0].number == Timers[i].GetComponent<TimerButton>().Hours && numbers[1].number == Timers[i].GetComponent<TimerButton>().Minutes)
             {
                 AlreadyExist = true;
+                if(i == Timers.IndexOf(currentTimer))
+                {
+                    saveData.RemoveTimer(currentTimer.GetComponent<TimerButton>().Hours + ":" + currentTimer.GetComponent<TimerButton>().Minutes);
+                    Timers.Remove(currentTimer);
+                    Destroy(currentTimer);
+                    AlreadyExist = false;
+                    Debug.Log("Aleady ...");
+                }
+                    
             }
         }
         if (!AlreadyExist)
         {
-            AddTheTimer(new int[] { numbers[0].number, numbers[1].number}, true);
+            AddTheTimer(new int[] { numbers[0].number, numbers[1].number}, true, false);
             openedViaTimerButton = false;
         }
         else
@@ -103,7 +116,7 @@ public class TimeManager : MonoBehaviour
             AETTime = Time.time + 1.5f;
         }
     }
-    public void AddTheTimer(int[] theNumbers, bool on)
+    public void AddTheTimer(int[] theNumbers, bool on, bool isAlreadySavedData)
     {
        // Debug.Log(theNumbers[0] + " , " + theNumbers[1]);
         GameObject g = Instantiate(timerPrefab, timerMenu.transform);
@@ -117,7 +130,9 @@ public class TimeManager : MonoBehaviour
             if (theNumbers[0] < Timers[i].GetComponent<TimerButton>().Hours || (theNumbers[0] == Timers[i].GetComponent<TimerButton>().Hours && theNumbers[1] < Timers[i].GetComponent<TimerButton>().Minutes))
             {
                 Timers.Insert(i, g);
-                saveData.AddTimer(i, theNumbers[0] + ":" + theNumbers[1], on);
+                if (!isAlreadySavedData)
+                    saveData.AddTimer(i, theNumbers[0] + ":" + theNumbers[1], on, settingsM.settingsIndex);
+
                 haveInserted = true;
                 break;
             }
@@ -125,9 +140,11 @@ public class TimeManager : MonoBehaviour
         if (!haveInserted)
         {
             Timers.Add(g);
-            saveData.AddTimer(Timers.IndexOf(g), theNumbers[0] + ":" + theNumbers[1], on);
+            if(!isAlreadySavedData)
+                 saveData.AddTimer(Timers.IndexOf(g), theNumbers[0] + ":" + theNumbers[1], on, settingsM.settingsIndex);
         }
-        saveData.saveTheData();
+        if (!isAlreadySavedData)
+            saveData.saveTheData();
 
         g.GetComponent<TimerButton>().Hours = theNumbers[0];
         g.GetComponent<TimerButton>().Minutes = theNumbers[1];
@@ -160,7 +177,15 @@ public class TimeManager : MonoBehaviour
     }
     public void removeTimer(GameObject g, int pH, int pM, bool on)
     {
+        currentTimer = g;
+
         deleteButton.SetActive(true);
+        sliderMenu.SetActive(true);
+        timerMenu.SetActive(false);
+
+        
+
+
         timerIsOn = on;
         openedViaTimerButton = true;
 
@@ -172,15 +197,18 @@ public class TimeManager : MonoBehaviour
         numbers[0].numberList.transform.position = new Vector3(numbers[0].numberList.transform.position.x, numbers[0].startY + (numbers[0].offset * g.GetComponent<TimerButton>().Hours), numbers[0].numberList.transform.position.z);
         numbers[1].numberList.transform.position = new Vector3(numbers[1].numberList.transform.position.x, numbers[1].startY + (numbers[1].offset * g.GetComponent<TimerButton>().Minutes), numbers[1].numberList.transform.position.z);
 
-        saveData.RemoveTimer(g.GetComponent<TimerButton>().Hours + ":" + g.GetComponent<TimerButton>().Minutes);
+        //saveData.RemoveTimer(g.GetComponent<TimerButton>().Hours + ":" + g.GetComponent<TimerButton>().Minutes);
+        int[] sI = { saveData.saveObject.difficulty[Timers.IndexOf(g)], saveData.saveObject.sound[Timers.IndexOf(g)] , saveData.saveObject.snoozeAmount[Timers.IndexOf(g)] };
+        settingsM.settingsIndexes(sI);
+        settingsM.SetSettingsText();
 
-        Timers.Remove(g);
-        Destroy(g);
+        foreach (Numbers number in numbers)
+        {
+            number.numberList.transform.position += new Vector3(0, .2f, 0);
+        }
 
 
-
-        sliderMenu.SetActive(true);
-        timerMenu.SetActive(false);
+        
     }
     public void OpenSliderMenu()
     {
@@ -198,20 +226,28 @@ public class TimeManager : MonoBehaviour
     }
     public void CancelButton()
     {
-        if (openedViaTimerButton)
+       /* if (openedViaTimerButton)
         {
-            AddTheTimer(new int[] { cancelHours, cancelMinutes }, timerIsOn);
+            //saveData.RemoveTimer(currentTimer.GetComponent<TimerButton>().Hours + ":" + currentTimer.GetComponent<TimerButton>().Minutes);
+
+            //Timers.Remove(currentTimer);
+            //Destroy(currentTimer);
+
+            //AddTheTimer(new int[] { cancelHours, cancelMinutes }, timerIsOn, false);
             openedViaTimerButton = false;
 
         }
         else
-        {
+        {*/
             sliderMenu.SetActive(false);
             ActivateTimerMenu();
-        }
+       // }
     }
     public void DeleteButton()
     {
+        saveData.RemoveTimer(currentTimer.GetComponent<TimerButton>().Hours + ":" + currentTimer.GetComponent<TimerButton>().Minutes);
+        Timers.Remove(currentTimer);
+        Destroy(currentTimer);
         sliderMenu.SetActive(false);
         ActivateTimerMenu();
 
