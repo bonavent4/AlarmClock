@@ -11,13 +11,13 @@ public class SaveData : MonoBehaviour
     {
         //Debug.Log(Application.persistentDataPath + "/Saves/SaveData.txt");
 
-        if (!Directory.Exists(Application.persistentDataPath + "/Saves"))
-            Directory.CreateDirectory(Application.persistentDataPath + "/Saves");
+       /* if (!Directory.Exists(Application.persistentDataPath + "/Saves"))
+            Directory.CreateDirectory(Application.persistentDataPath + "/Saves");*/
 
-        if (!File.Exists(Application.persistentDataPath + "/Saves/SaveData.txt"))
-            File.WriteAllText(Application.persistentDataPath + "/Saves/SaveData.txt", JsonUtility.ToJson(saveObject));
+        if (!File.Exists(Application.persistentDataPath + "/SaveData.txt"))
+            File.WriteAllText(Application.persistentDataPath + "/SaveData.txt", JsonUtility.ToJson(saveObject));
         else
-            saveObject = JsonUtility.FromJson<SaveObject>(File.ReadAllText(Application.persistentDataPath + "/Saves/SaveData.txt"));
+            saveObject = JsonUtility.FromJson<SaveObject>(File.ReadAllText(Application.persistentDataPath + "/SaveData.txt"));
 
         for (int i = 0; i < saveObject.timers.Count; i++)
         {
@@ -45,7 +45,7 @@ public class SaveData : MonoBehaviour
     public void saveTheData()
     {
         
-        File.WriteAllText(Application.persistentDataPath + "/Saves/SaveData.txt", JsonUtility.ToJson(saveObject));
+        File.WriteAllText(Application.persistentDataPath + "/SaveData.txt", JsonUtility.ToJson(saveObject));
         Debug.Log("savedData");
     }
 
