@@ -7,6 +7,8 @@ public class MiniGameManager : MonoBehaviour
     public bool isInGame;
 
     [SerializeField] GameObject GameMenu;
+    [SerializeField] GameObject SlothMenu;
+    [SerializeField] GameObject settingsMenu;
     [SerializeField] GameObject[] miniGamePrefabs;
 
     GameObject miniGame;
@@ -20,14 +22,12 @@ public class MiniGameManager : MonoBehaviour
 
     GameObject timerM;
 
-
     GameObject outOfGameMenu;
     [SerializeField] GameObject inGameMenu;
     GameObject theTimer;
 
     TimeManager tM;
     SaveData saveD;
-
 
     [SerializeField]bool muteAlarmWhilePlaying;
     [SerializeField] GameObject soundOnIcon;
@@ -37,10 +37,13 @@ public class MiniGameManager : MonoBehaviour
     [SerializeField] float timeSpeed;
     bool moveSlider;
 
+    //sloth
+    SlothManager slothM;
     private void Awake()
     {
         tM = FindObjectOfType<TimeManager>();
         saveD = gameObject.GetComponent<SaveData>();
+        slothM = gameObject.GetComponent<SlothManager>();
     }
     private void Update()
     {
@@ -76,6 +79,8 @@ public class MiniGameManager : MonoBehaviour
         isInGame = true;
         timerMenu.SetActive(false);
         sliderMenu.SetActive(false);
+        SlothMenu.SetActive(false);
+        settingsMenu.SetActive(false);
         GameMenu.SetActive(true);
 
         
@@ -83,6 +88,10 @@ public class MiniGameManager : MonoBehaviour
 
 
         minigameIndex = Random.Range(0, miniGamePrefabs.Length);
+
+
+        //sloth
+        slothM.PlaceSloth(1);
     }
     public void PlayGameButton(GameObject Button)
     {
@@ -98,14 +107,17 @@ public class MiniGameManager : MonoBehaviour
     public void DoneWithGame()
     {
         stopTimer();
-        GameMenu.SetActive(false);
-        tM.ActivateTimerMenu();
+        doneWithGame();
 
-        alarmSound.Stop();
-
-        isInGame = false;
+        slothM.AddOrTakePoints(5);
     }
     public void Snooze()
+    {
+        doneWithGame();
+
+        theTimer.GetComponent<TimerButton>().ActivateSnoozeText();
+    }
+    void doneWithGame()
     {
         GameMenu.SetActive(false);
         tM.ActivateTimerMenu();
@@ -114,8 +126,7 @@ public class MiniGameManager : MonoBehaviour
 
         isInGame = false;
 
-
-        theTimer.GetComponent<TimerButton>().ActivateSnoozeText();
+        slothM.SlothInactive();
     }
     public void GoBackToOutOfGameMenu()
     {

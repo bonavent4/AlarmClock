@@ -89,22 +89,31 @@ public class TimeManager : MonoBehaviour
     public void addTimer()
     {
         bool AlreadyExist = false;
-        for (int i = 0; i < Timers.Count; i++)
+        if(currentTimer != null)
         {
-            if(numbers[0].number == Timers[i].GetComponent<TimerButton>().Hours && numbers[1].number == Timers[i].GetComponent<TimerButton>().Minutes)
+            saveData.RemoveTimer(currentTimer.GetComponent<TimerButton>().Hours + ":" + currentTimer.GetComponent<TimerButton>().Minutes);
+            Timers.Remove(currentTimer);
+            Destroy(currentTimer);
+            AlreadyExist = false;
+            Debug.Log("Aleady ...");
+        }
+        else
+        {
+            for (int i = 0; i < Timers.Count; i++)
             {
-                AlreadyExist = true;
-                if(i == Timers.IndexOf(currentTimer))
+                if (numbers[0].number == Timers[i].GetComponent<TimerButton>().Hours && numbers[1].number == Timers[i].GetComponent<TimerButton>().Minutes)
                 {
-                    saveData.RemoveTimer(currentTimer.GetComponent<TimerButton>().Hours + ":" + currentTimer.GetComponent<TimerButton>().Minutes);
-                    Timers.Remove(currentTimer);
-                    Destroy(currentTimer);
-                    AlreadyExist = false;
-                    Debug.Log("Aleady ...");
+
+                    AlreadyExist = true;
+                    /*if (i == Timers.IndexOf(currentTimer))
+                    {
+                        
+                    }*/
+
                 }
-                    
             }
         }
+        
         if (!AlreadyExist)
         {
             AddTheTimer(new int[] { numbers[0].number, numbers[1].number}, true, false);
@@ -127,7 +136,8 @@ public class TimeManager : MonoBehaviour
         bool haveInserted = false;
         for (int i = 0; i < Timers.Count; i++)
         {
-            if (theNumbers[0] < Timers[i].GetComponent<TimerButton>().Hours || (theNumbers[0] == Timers[i].GetComponent<TimerButton>().Hours && theNumbers[1] < Timers[i].GetComponent<TimerButton>().Minutes))
+            if (theNumbers[0] < Timers[i].GetComponent<TimerButton>().Hours || (theNumbers[0] == Timers[i].
+                GetComponent<TimerButton>().Hours && theNumbers[1] < Timers[i].GetComponent<TimerButton>().Minutes))
             {
                 Timers.Insert(i, g);
                 if (!isAlreadySavedData)

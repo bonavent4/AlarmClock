@@ -9,10 +9,7 @@ public class SaveData : MonoBehaviour
     public SaveObject saveObject = new SaveObject { };
     private void Awake()
     {
-        //Debug.Log(Application.persistentDataPath + "/Saves/SaveData.txt");
-
-       /* if (!Directory.Exists(Application.persistentDataPath + "/Saves"))
-            Directory.CreateDirectory(Application.persistentDataPath + "/Saves");*/
+        Debug.Log(Application.persistentDataPath );
 
         if (!File.Exists(Application.persistentDataPath + "/SaveData.txt"))
             File.WriteAllText(Application.persistentDataPath + "/SaveData.txt", JsonUtility.ToJson(saveObject));
@@ -37,10 +34,17 @@ public class SaveData : MonoBehaviour
     {
         public List<string> timers = new List<string>();
         public List<bool> isOn = new List<bool>();
-        //public List<int[]> settings = new List<int[]>();
+
         public List<int> difficulty = new List<int>();
         public List<int> sound = new List<int>();
         public List<int> snoozeAmount = new List<int>();
+
+        public int[] slothClothIndexes = new int[3] { -1,-1,-1};
+        public int ClothingColorIndex = 0;
+        public int Points = 0;
+        public bool[] hatsOwned = new bool[4];
+        public bool[] faceOwned = new bool[3];
+        public bool[] clothingOwned = new bool[1];
     }
     public void saveTheData()
     {

@@ -14,7 +14,6 @@ public class TouchInput : MonoBehaviour
     float pY;
     [SerializeField] float force;
 
-
     private void Awake()
     {
         mGManager = FindObjectOfType<MiniGameManager>();
@@ -34,11 +33,11 @@ public class TouchInput : MonoBehaviour
                     theObject.GetComponent<Numbers>().numberList.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
                     pY = Input.touches[0].position.y;
 
-                    theObject.GetComponent<Numbers>().isBeingTouched = true;
+                    theObject.GetComponent<Numbers>().isBeingTouched = true;    
                 }
             }
             if(theObject!= null)
-            {
+            {                                                                                                                                                                                                       
                 theObject.GetComponent<Numbers>().numberList.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
                 if (pY != Input.touches[0].position.y)
                 {
@@ -55,7 +54,7 @@ public class TouchInput : MonoBehaviour
         }
         else
         {
-             if(theObject != null)
+            if(theObject != null)
             {
                 theObject.GetComponent<Numbers>().isBeingTouched = false;
                 theObject = null;

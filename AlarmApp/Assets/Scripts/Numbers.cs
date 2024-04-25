@@ -39,12 +39,15 @@ public class Numbers : MonoBehaviour
         if (!isBeingTouched)
         {
             float multiplier = 1;
-            
+
+            //check if over maxnumber + 1 or under -1, if yes then slow down like hell
             if (Mathf.Round((numberList.transform.position.y - startY) / offset) < -1 || Mathf.Round((numberList.transform.position.y - startY) / offset) > amountOfNumbers + 1)
             {
                 numberList.GetComponent<Rigidbody2D>().velocity = new Vector2(0, numberList.GetComponent<Rigidbody2D>().velocity.y / 30);
                   multiplier = 2;
             }
+
+            // adds force according to how close it is to a number to align with the number.
             if (numberList.GetComponent<Rigidbody2D>().velocity.y < maxYVel && numberList.GetComponent<Rigidbody2D>().velocity.y > -maxYVel)
             {
                     numberList.GetComponent<Rigidbody2D>().AddForce(transform.up * force * Time.deltaTime * (number - (numberList.transform.position.y - startY) / offset) * multiplier + new Vector3(0, -numberList.GetComponent<Rigidbody2D>().velocity.y, 0));
